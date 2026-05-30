@@ -179,16 +179,23 @@ function normalizeJsonEvent(value: Record<string, unknown>, sourceLine: number):
   const type = stringValue(value.type) ?? stringValue(value.kind) ?? stringValue(value.event);
   const command = stringValue(value.command) ?? stringValue(value.cmd);
 
-  if (type === "command" || command) {
+  if (type === "command" || (!type && command)) {
     const text = command ?? stringValue(value.message) ?? "";
-    return {
+    const event: ToolBillEvent = {
       kind: "command",
       command: text,
       category: classifyCommand(text),
-      exitCode: numberValue(value.exitCode) ?? numberValue(value.exit_code),
-      elapsedMs: numberValue(value.elapsedMs) ?? numberValue(value.elapsed_ms),
       sourceLine
     };
+    const exitCode = numberValue(value.exitCode) ?? numberValue(value.exit_code);
+    const elapsedMs = numberValue(value.elapsedMs) ?? numberValue(value.elapsed_ms);
+    if (exitCode !== undefined) {
+      event.exitCode = exitCode;
+    }
+    if (elapsedMs !== undefined) {
+      event.elapsedMs = elapsedMs;
+    }
+    return event;
   }
 
   const filePath = stringValue(value.path) ?? stringValue(value.file);
@@ -202,22 +209,36 @@ function normalizeJsonEvent(value: Record<string, unknown>, sourceLine: number):
   }
 
   if (type === "network") {
-    return {
+    const event: ToolBillEvent = {
       kind: "network",
       target: stringValue(value.target) ?? stringValue(value.url) ?? "unknown",
-      action: stringValue(value.action),
       sourceLine
     };
+    const action = stringValue(value.action);
+    if (action !== undefined) {
+      event.action = action;
+    }
+    return event;
   }
 
   if (type === "model") {
-    return {
+    const event: ToolBillEvent = {
       kind: "model",
-      model: stringValue(value.model),
-      tokensIn: numberValue(value.tokensIn) ?? numberValue(value.tokens_in),
-      tokensOut: numberValue(value.tokensOut) ?? numberValue(value.tokens_out),
       sourceLine
     };
+    const model = stringValue(value.model);
+    const tokensIn = numberValue(value.tokensIn) ?? numberValue(value.tokens_in);
+    const tokensOut = numberValue(value.tokensOut) ?? numberValue(value.tokens_out);
+    if (model !== undefined) {
+      event.model = model;
+    }
+    if (tokensIn !== undefined) {
+      event.tokensIn = tokensIn;
+    }
+    if (tokensOut !== undefined) {
+      event.tokensOut = tokensOut;
+    }
+    return event;
   }
 
   if (type === "tool") {
