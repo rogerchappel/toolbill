@@ -27,7 +27,7 @@ interface ParsedArgs {
 export async function main(argv = process.argv.slice(2)): Promise<void> {
   const args = parseArgs(argv);
 
-  if (!args.command || args.command === "help" || args.flags.has("help")) {
+  if (!args.command || args.command === "help" || args.command === "--help" || args.command === "-h" || args.flags.has("help")) {
     process.stdout.write(usage());
     return;
   }

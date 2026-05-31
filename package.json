@@ -24,7 +24,7 @@
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test dist/test/*.test.js",
-    "smoke": "npm run build && node dist/src/cli.js summarize fixtures/openclaw-text.log && node dist/src/cli.js json fixtures/codex-jsonl.log",
+    "smoke": "npm run build && node dist/src/cli.js --help && node dist/src/cli.js summarize fixtures/openclaw-text.log && node dist/src/cli.js json fixtures/codex-jsonl.log",
     "package:smoke": "npm pack --dry-run",
     "release:check": "npm run check && npm test && npm run smoke && npm run package:smoke"
   },
