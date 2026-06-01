@@ -1,0 +1,8 @@
+model: gpt-5.3-codex
+tool_call: exec_command
+$ rg --files src
+read: src/parse.ts
+$ apply_patch
+wrote: src/cli.ts
+network: https://github.com/rogerchappel/toolbill
+verification: pass - npm run check
