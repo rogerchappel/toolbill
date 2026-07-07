@@ -124,7 +124,10 @@ printf 'Checking toolbill required files...\n'
 
 check_file "README.md"
 check_file "AGENTS.md"
+check_file "LICENSE"
+check_file "CHANGELOG.md"
 check_file "CONTRIBUTING.md"
+check_file "CODE_OF_CONDUCT.md"
 check_file "SECURITY.md"
 check_file ".github/pull_request_template.md"
 check_file "scripts/validate.sh"
