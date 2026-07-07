@@ -91,3 +91,7 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting guidance.
 ## License
 
 MIT
+
+## Limitations
+
+toolbill relies on the local repository state and command output available at run time. It cannot infer reviewer intent, remote branch policy, or uncommitted context that was not included in the input, so inspect generated reports before sharing them.
