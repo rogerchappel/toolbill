@@ -88,6 +88,15 @@ should be small, reviewable, and verified before review.
 
 See [SECURITY.md](SECURITY.md) for vulnerability reporting guidance.
 
+## Limitations
+
+- ToolBill summarizes observable log and git-change evidence; it does not prove
+  that every command, file, or model action from a run was captured.
+- Parsers intentionally avoid vendor APIs and remote lookups, so token costs,
+  elapsed time, and model names are reported only when present in the input.
+- Generated bills are review aids for maintainers. Treat them as release or PR
+  evidence to inspect, not as an automatic approval signal.
+
 ## License
 
 MIT
