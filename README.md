@@ -79,6 +79,16 @@ For repository hygiene checks, run:
 bash scripts/validate.sh
 ```
 
+For npm package contents, run:
+
+```sh
+npm run package:smoke
+```
+
+The package smoke builds the CLI, runs `npm pack --dry-run --json`, and fails if
+the tarball is missing the CLI runtime, type declarations, fixtures, support
+docs, or repository policy files expected by users.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution expectations. Changes
@@ -100,7 +110,3 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting guidance.
 ## License
 
 MIT
-
-## Limitations
-
-toolbill relies on the local repository state and command output available at run time. It cannot infer reviewer intent, remote branch policy, or uncommitted context that was not included in the input, so inspect generated reports before sharing them.
