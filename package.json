@@ -16,7 +16,9 @@
   },
   "files": [
     "dist/src",
+    "docs",
     "fixtures",
+    "AGENTS.md",
     "README.md",
     "LICENSE",
     "SECURITY.md",
@@ -29,7 +31,7 @@
     "check": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test dist/test/*.test.js",
     "smoke": "npm run build && node dist/src/cli.js --help && node dist/src/cli.js summarize fixtures/openclaw-text.log && node dist/src/cli.js json fixtures/codex-jsonl.log",
-    "package:smoke": "npm pack --dry-run",
+    "package:smoke": "npm run build && node scripts/package-smoke.mjs",
     "release:check": "npm run check && npm test && npm run smoke && npm run package:smoke"
   },
   "keywords": [
@@ -54,13 +56,5 @@
   "devDependencies": {
     "@types/node": "^25.9.1",
     "typescript": "^6.0.3"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rogerchappel/toolbill.git"
-  },
-  "bugs": {
-    "url": "https://github.com/rogerchappel/toolbill/issues"
-  },
-  "homepage": "https://github.com/rogerchappel/toolbill#readme"
+  }
 }
