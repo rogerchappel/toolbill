@@ -24,6 +24,8 @@ interface ParsedArgs {
   flags: Map<string, string>;
 }
 
+class UsageError extends Error {}
+
 export async function main(argv = process.argv.slice(2)): Promise<void> {
   const args = parseArgs(argv);
 
@@ -33,6 +35,7 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
   }
 
   if (args.command === "summarize") {
+    validateCommand(args, { positionals: 1 });
     const filePath = requiredPositional(args, 0, "Missing log file.");
     const bill = await parseLogFile(filePath);
     process.stdout.write(renderMarkdownBill(bill));
@@ -40,6 +43,7 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
   }
 
   if (args.command === "json") {
+    validateCommand(args, { positionals: 1 });
     const filePath = requiredPositional(args, 0, "Missing log file.");
     const bill = await parseLogFile(filePath);
     process.stdout.write(`${JSON.stringify(bill, null, 2)}\n`);
@@ -47,9 +51,10 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
   }
 
   if (args.command === "git") {
+    validateCommand(args, { flags: ["since", "repo"], positionals: 0 });
     const since = args.flags.get("since");
     if (!since) {
-      throw new Error("Missing required --since <ref>.");
+      throw new UsageError("Missing required --since <ref>.");
     }
 
     const repo = args.flags.get("repo");
@@ -58,7 +63,7 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
     return;
   }
 
-  throw new Error(`Unknown command: ${args.command}\n\n${usage()}`);
+  throw new UsageError(`Unknown command: ${args.command}`);
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
@@ -72,10 +77,16 @@ function parseArgs(argv: string[]): ParsedArgs {
       continue;
     }
 
-    if (token.startsWith("--")) {
+    if (token === "-h") {
+      flags.set("help", "true");
+    } else if (token.startsWith("--")) {
       const [rawName, inlineValue] = token.slice(2).split(/=(.*)/s, 2);
       const expectsValue = rawName === "since" || rawName === "repo";
-      const value = inlineValue ?? (expectsValue ? rest[index + 1] : "true");
+      const nextValue = rest[index + 1];
+      const value = inlineValue ?? (expectsValue ? nextValue : "true");
+      if (expectsValue && (!value || value.startsWith("--"))) {
+        throw new UsageError(`Missing operand for --${rawName}.`);
+      }
       if (expectsValue && inlineValue === undefined) {
         index += 1;
       }
@@ -88,17 +99,34 @@ function parseArgs(argv: string[]): ParsedArgs {
   return { command, positionals, flags };
 }
 
+function validateCommand(
+  args: ParsedArgs,
+  contract: { flags?: string[]; positionals: number },
+): void {
+  const allowedFlags = new Set(["help", ...(contract.flags ?? [])]);
+  for (const flag of args.flags.keys()) {
+    if (!allowedFlags.has(flag)) {
+      throw new UsageError(`Unsupported option for ${args.command}: --${flag}`);
+    }
+  }
+
+  if (args.positionals.length > contract.positionals) {
+    throw new UsageError(`Too many arguments for ${args.command}.`);
+  }
+}
+
 function requiredPositional(args: ParsedArgs, index: number, message: string): string {
   const value = args.positionals[index];
   if (!value) {
-    throw new Error(message);
+    throw new UsageError(message);
   }
 
   return value;
 }
 
 main().catch((error: unknown) => {
-  const message = error instanceof Error ? error.message : String(error);
+  const detail = error instanceof Error ? error.message : String(error);
+  const message = error instanceof UsageError ? `${detail}\n\n${usage()}` : detail;
   process.stderr.write(`${message}\n`);
   process.exitCode = 1;
 });
