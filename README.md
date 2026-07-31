@@ -37,6 +37,16 @@ Summarize the current repo since a ref:
 npm exec -- toolbill git --since origin/main
 ```
 
+### CLI contract
+
+- `summarize` and `json` each accept exactly one log-file argument and no
+  command-specific options.
+- `git` requires `--since <ref>`, optionally accepts `--repo <path>`, and does
+  not accept positional arguments.
+- `--help` (or `-h`) prints usage and exits successfully. Unknown options,
+  missing option operands, missing required arguments, and extra positional
+  arguments print a usage error to stderr and exit with status 1.
+
 ## Sample PR Comment
 
 ```md
