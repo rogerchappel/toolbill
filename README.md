@@ -37,6 +37,18 @@ Summarize the current repo since a ref:
 npm exec -- toolbill git --since origin/main
 ```
 
+Git summaries classify each changed path as `added`, `deleted`, `modified`, or
+`renamed` while retaining its numstat addition and deletion counts. Renames use
+an explicit `old/path => new/path` form, including changes that Git internally
+abbreviates with braces. Representative file output looks like:
+
+```md
+- added `docs/guide.md` (+24/-0)
+- deleted `docs/legacy.md` (+0/-18)
+- modified `README.md` (+6/-2)
+- renamed `src/old.ts => src/new.ts` (+0/-0)
+```
+
 ### CLI contract
 
 - `summarize` and `json` each accept exactly one log-file argument and no

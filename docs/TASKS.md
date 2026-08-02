@@ -9,13 +9,14 @@ Status: active
 - Command classification for read, write, test, network, git, package, and unknown commands.
 - Markdown and JSON log bill output.
 - Git summary output for commits and changed files since a ref.
+- Git summaries classify added, deleted, modified, and renamed files while
+  preserving numstat counts and unambiguous old-to-new rename paths.
 - Fixture-backed parser and git summary tests.
 - Release check, smoke check, and npm package dry run.
 
 ## Next
 
 - Add more real-world fixtures from Codex, OpenClaw, and other local coding-agent logs.
-- Improve git file status detection beyond aggregate numstat output.
 - Add optional redaction helpers for paths or values users do not want in PR comments.
 - Document parser limitations with examples as new fixtures are added.
 
