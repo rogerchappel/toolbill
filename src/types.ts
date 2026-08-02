@@ -104,7 +104,7 @@ export interface GitSummary {
   }>;
   files: Array<{
     path: string;
-    status: string;
+    status: "added" | "deleted" | "modified" | "renamed";
     additions: number;
     deletions: number;
   }>;
