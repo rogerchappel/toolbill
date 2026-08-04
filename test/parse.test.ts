@@ -31,3 +31,28 @@ test("parses Codex-like JSONL logs into typed events", async () => {
   assert.equal(bill.totals.elapsedMs, 1420);
   assert.equal(bill.totals.byCategory.test, 1);
 });
+
+test("recovers valid events from partially malformed JSONL", async () => {
+  const content = await readFile("fixtures/partial-jsonl.log", "utf8");
+  const bill = parseLog(content, "fixtures/partial-jsonl.log");
+
+  assert.equal(bill.parser, "jsonl");
+  assert.equal(bill.totals.commands, 1);
+  assert.deepEqual(
+    bill.events.map((event) => [event.kind, event.sourceLine]),
+    [
+      ["command", 2],
+      ["note", 3],
+      ["note", 4]
+    ]
+  );
+  assert.equal(bill.events[1]?.kind === "note" && bill.events[1].message, "Unparsed JSONL line 3");
+  assert.equal(bill.events[2]?.kind === "note" && bill.events[2].message, "Unparsed JSONL line 4");
+});
+
+test("keeps wholly textual logs on the text parser", () => {
+  const bill = parseLog("command: npm test\nplain diagnostic text\n");
+
+  assert.equal(bill.parser, "text");
+  assert.equal(bill.totals.commands, 1);
+});
