@@ -17,6 +17,23 @@ test("CLI help and JSON output are usable from the built package", async () => {
   assert.equal(bill.totals.commands, 1);
 });
 
+test("CLI JSON output retains valid records from partial JSONL", async () => {
+  const { stdout } = await execFileAsync("node", ["dist/src/cli.js", "json", "fixtures/partial-jsonl.log"]);
+  const bill = JSON.parse(stdout) as {
+    parser: string;
+    events: Array<{ kind: string; sourceLine: number }>;
+    totals: { commands: number };
+  };
+
+  assert.equal(bill.parser, "jsonl");
+  assert.equal(bill.totals.commands, 1);
+  assert.deepEqual(bill.events.map(({ kind, sourceLine }) => [kind, sourceLine]), [
+    ["command", 2],
+    ["note", 3],
+    ["note", 4]
+  ]);
+});
+
 function runCli(args: string[]) {
   return spawnSync("node", ["dist/src/cli.js", ...args], { encoding: "utf8" });
 }

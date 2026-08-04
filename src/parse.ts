@@ -41,17 +41,17 @@ export function parseJsonl(content: string): ToolBillEvent[] {
     }
 
     try {
-      const value = JSON.parse(trimmed) as Record<string, unknown>;
+      const value: unknown = JSON.parse(trimmed);
+      if (!isJsonObject(value)) {
+        events.push(unparsedJsonlLine(index + 1));
+        return;
+      }
       const event = normalizeJsonEvent(value, index + 1);
       if (event) {
         events.push(event);
       }
     } catch {
-      events.push({
-        kind: "note",
-        message: `Unparsed JSONL line ${index + 1}`,
-        sourceLine: index + 1
-      });
+      events.push(unparsedJsonlLine(index + 1));
     }
   });
 
@@ -172,7 +172,25 @@ function looksLikeJsonl(content: string): boolean {
     .map((line) => line.trim())
     .filter(Boolean);
 
-  return nonEmpty.length > 0 && nonEmpty.every((line) => line.startsWith("{") && line.endsWith("}"));
+  return nonEmpty.some((line) => {
+    try {
+      return isJsonObject(JSON.parse(line));
+    } catch {
+      return false;
+    }
+  });
+}
+
+function isJsonObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function unparsedJsonlLine(sourceLine: number): ToolBillEvent {
+  return {
+    kind: "note",
+    message: `Unparsed JSONL line ${sourceLine}`,
+    sourceLine
+  };
 }
 
 function normalizeJsonEvent(value: Record<string, unknown>, sourceLine: number): ToolBillEvent | null {
