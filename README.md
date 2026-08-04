@@ -31,6 +31,12 @@ Emit machine-readable JSON from JSONL:
 npm exec -- toolbill json fixtures/codex-jsonl.log
 ```
 
+JSONL detection tolerates real-world partial logs. If at least one non-empty
+line is a JSON object, valid object records are retained while malformed JSON
+and JSON values that are not objects become `note` events identifying their
+original line numbers. Leading and trailing blank lines are ignored. Inputs
+with no JSON object records continue through the text-log parser.
+
 Summarize the current repo since a ref:
 
 ```sh
