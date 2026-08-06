@@ -50,6 +50,33 @@ test("recovers valid events from partially malformed JSONL", async () => {
   assert.equal(bill.events[2]?.kind === "note" && bill.events[2].message, "Unparsed JSONL line 4");
 });
 
+test("prefers recognized JSONL event types over incidental file fields", async () => {
+  const content = await readFile("fixtures/jsonl-normalization.log", "utf8");
+  const bill = parseLog(content, "fixtures/jsonl-normalization.log");
+
+  assert.deepEqual(
+    bill.events.slice(0, 3).map((event) => event.kind),
+    ["model", "network", "tool"]
+  );
+  assert.equal(bill.totals.filesTouched, 0);
+});
+
+test("normalizes supported verification booleans without truthiness inversion", async () => {
+  const content = await readFile("fixtures/jsonl-normalization.log", "utf8");
+  const bill = parseLog(content, "fixtures/jsonl-normalization.log");
+
+  assert.deepEqual(
+    bill.events.slice(3, 7).map((event) => event.kind === "verification" && event.passed),
+    [false, false, false, true]
+  );
+  assert.deepEqual(bill.events[7], {
+    kind: "note",
+    message: "Unparsed JSONL line 8",
+    sourceLine: 8
+  });
+  assert.equal(bill.totals.verificationCommands, 4);
+});
+
 test("keeps wholly textual logs on the text parser", () => {
   const bill = parseLog("command: npm test\nplain diagnostic text\n");
 

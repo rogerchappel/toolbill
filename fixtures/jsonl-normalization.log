@@ -1,0 +1,8 @@
+{"type":"model","model":"gpt-5.3-codex","path":"diagnostics/model.json"}
+{"type":"network","target":"api.example.test","file":"response.json"}
+{"type":"tool","name":"read_file","path":"src/parse.ts"}
+{"type":"verification","command":"npm test","passed":false}
+{"type":"verification","command":"npm run check","ok":"false"}
+{"type":"verification","command":"npm run smoke","success":0}
+{"type":"verification","command":"npm run package:smoke","passed":"passed"}
+{"type":"verification","command":"npm run release:check","passed":"not-run"}
