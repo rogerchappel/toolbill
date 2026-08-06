@@ -216,11 +216,10 @@ function normalizeJsonEvent(value: Record<string, unknown>, sourceLine: number):
     return event;
   }
 
-  const filePath = stringValue(value.path) ?? stringValue(value.file);
-  if (type === "file" || filePath) {
+  if (type === "file") {
     return {
       kind: "file",
-      path: filePath ?? "unknown",
+      path: stringValue(value.path) ?? stringValue(value.file) ?? "unknown",
       action: fileActionValue(value.action),
       sourceLine
     };
@@ -269,10 +268,14 @@ function normalizeJsonEvent(value: Record<string, unknown>, sourceLine: number):
   }
 
   if (type === "verification") {
+    const passed = verificationValue(value.passed ?? value.ok ?? value.success);
+    if (passed === undefined) {
+      return unparsedJsonlLine(sourceLine);
+    }
     return {
       kind: "verification",
       command: command ?? stringValue(value.name) ?? "verification",
-      passed: Boolean(value.passed ?? value.ok ?? value.success),
+      passed,
       sourceLine
     };
   }
@@ -281,6 +284,16 @@ function normalizeJsonEvent(value: Record<string, unknown>, sourceLine: number):
     return {
       kind: "note",
       message: stringValue(value.message) ?? JSON.stringify(value),
+      sourceLine
+    };
+  }
+
+  const filePath = stringValue(value.path) ?? stringValue(value.file);
+  if (!type && filePath) {
+    return {
+      kind: "file",
+      path: filePath,
+      action: fileActionValue(value.action),
       sourceLine
     };
   }
@@ -360,6 +373,22 @@ function stringValue(value: unknown): string | undefined {
 
 function numberValue(value: unknown): number | undefined {
   return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function verificationValue(value: unknown): boolean | undefined {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (value === 1 || value === "true" || value === "pass" || value === "passed") {
+    return true;
+  }
+
+  if (value === 0 || value === "false" || value === "fail" || value === "failed") {
+    return false;
+  }
+
+  return undefined;
 }
 
 function fileActionValue(value: unknown): "read" | "write" | "delete" | "touch" | "unknown" {
