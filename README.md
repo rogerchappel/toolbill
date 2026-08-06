@@ -37,6 +37,14 @@ and JSON values that are not objects become `note` events identifying their
 original line numbers. Leading and trailing blank lines are ignored. Inputs
 with no JSON object records continue through the text-log parser.
 
+For JSON object records, a recognized `type` (or `kind`/`event`) determines the
+event even when the record also contains incidental fields such as `path` or
+`file`. Untyped records may still be inferred as command or file events.
+Verification results accept JSON booleans, numeric `1`/`0`, and the exact
+strings `true`/`false`, `pass`/`fail`, or `passed`/`failed`. Any other or missing
+verification result is retained as an unparsed `note`; it is never coerced by
+JavaScript truthiness into a reported pass or failure.
+
 Summarize the current repo since a ref:
 
 ```sh
