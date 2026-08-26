@@ -1,0 +1,2 @@
+command: curl https://example.com/api
+network: https://example.com/api

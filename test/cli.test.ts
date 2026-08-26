@@ -34,6 +34,21 @@ test("CLI JSON output retains valid records from partial JSONL", async () => {
   ]);
 });
 
+test("CLI JSON and Markdown agree on mixed network action totals", async () => {
+  const json = runCli(["json", "fixtures/network-actions-jsonl.log"]);
+  const markdown = runCli(["summarize", "fixtures/network-actions-jsonl.log"]);
+  const bill = JSON.parse(json.stdout) as {
+    totals: { networkActions: number; byCategory: { network: number } };
+  };
+
+  assert.equal(json.status, 0);
+  assert.equal(markdown.status, 0);
+  assert.equal(bill.totals.byCategory.network, 1);
+  assert.equal(bill.totals.networkActions, 2);
+  assert.match(markdown.stdout, /- Network-like actions: 2/);
+  assert.match(markdown.stdout, /- network: 1/);
+});
+
 function runCli(args: string[]) {
   return spawnSync("node", ["dist/src/cli.js", ...args], { encoding: "utf8" });
 }
