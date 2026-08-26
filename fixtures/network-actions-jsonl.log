@@ -1,0 +1,2 @@
+{"type":"command","command":"curl https://example.com/api"}
+{"type":"network","target":"https://example.com/api"}

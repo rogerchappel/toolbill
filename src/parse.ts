@@ -157,7 +157,9 @@ export function calculateTotals(events: ToolBillEvent[]): Totals {
   return {
     commands: events.filter((event) => event.kind === "command").length,
     filesTouched: files.size,
-    networkActions: events.filter((event) => event.kind === "network").length,
+    networkActions: events.filter(
+      (event) => event.kind === "network" || (event.kind === "command" && event.category === "network")
+    ).length,
     modelInvocations: events.filter((event) => event.kind === "model").length,
     toolInvocations: events.filter((event) => event.kind === "tool").length,
     verificationCommands: events.filter((event) => event.kind === "verification").length,

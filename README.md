@@ -45,6 +45,13 @@ strings `true`/`false`, `pass`/`fail`, or `passed`/`failed`. Any other or missin
 verification result is retained as an unparsed `note`; it is never coerced by
 JavaScript truthiness into a reported pass or failure.
 
+`Network-like actions` counts both explicit network events and commands that
+ToolBill classifies in the `network` command category. Each input record is one
+observable action, so an explicit network event and a network-classified
+command are counted separately even when they name the same target. JSON and
+Markdown reports use this same total; `byCategory.network` remains the count of
+network-classified commands only.
+
 Summarize the current repo since a ref:
 
 ```sh
