@@ -78,6 +78,26 @@ test("normalizes supported verification booleans without truthiness inversion", 
   assert.equal(bill.totals.verificationCommands, 4);
 });
 
+test("retains unsupported typed JSONL objects beside recognized events", () => {
+  const bill = parseLog([
+    '{"type":"future_event","detail":"kept evidence"}',
+    '{"type":"note","message":"known"}'
+  ].join("\n"));
+
+  assert.deepEqual(bill.events, [
+    {
+      kind: "note",
+      message: 'Unparsed JSONL line 1: {"type":"future_event","detail":"kept evidence"}',
+      sourceLine: 1
+    },
+    {
+      kind: "note",
+      message: "known",
+      sourceLine: 2
+    }
+  ]);
+});
+
 test("keeps wholly textual logs on the text parser", () => {
   const bill = parseLog("command: npm test\nplain diagnostic text\n");
 
