@@ -187,10 +187,12 @@ function isJsonObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function unparsedJsonlLine(sourceLine: number): ToolBillEvent {
+function unparsedJsonlLine(sourceLine: number, value?: Record<string, unknown>): ToolBillEvent {
   return {
     kind: "note",
-    message: `Unparsed JSONL line ${sourceLine}`,
+    message: value
+      ? `Unparsed JSONL line ${sourceLine}: ${JSON.stringify(value)}`
+      : `Unparsed JSONL line ${sourceLine}`,
     sourceLine
   };
 }
@@ -300,7 +302,7 @@ function normalizeJsonEvent(value: Record<string, unknown>, sourceLine: number):
     };
   }
 
-  return null;
+  return unparsedJsonlLine(sourceLine, value);
 }
 
 function matchCommand(line: string): { value: string } | null {
