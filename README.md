@@ -32,10 +32,12 @@ npm exec -- toolbill json fixtures/codex-jsonl.log
 ```
 
 JSONL detection tolerates real-world partial logs. If at least one non-empty
-line is a JSON object, valid object records are retained while malformed JSON
-and JSON values that are not objects become `note` events identifying their
-original line numbers. Leading and trailing blank lines are ignored. Inputs
-with no JSON object records continue through the text-log parser.
+line is a JSON object, valid object records are retained. Unsupported typed
+objects become `note` events containing their stable JSON content and original
+line number; malformed JSON and JSON values that are not objects become `note`
+events identifying their original line numbers. Leading and trailing blank
+lines are ignored. Inputs with no JSON object records continue through the
+text-log parser.
 
 For JSON object records, a recognized `type` (or `kind`/`event`) determines the
 event even when the record also contains incidental fields such as `path` or
