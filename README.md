@@ -48,11 +48,15 @@ verification result is retained as an unparsed `note`; it is never coerced by
 JavaScript truthiness into a reported pass or failure.
 
 `Network-like actions` counts both explicit network events and commands that
-ToolBill classifies in the `network` command category. Each input record is one
-observable action, so an explicit network event and a network-classified
+perform a recognized remote operation. This includes `git clone`, `fetch`,
+`pull`, and `push`, plus supported `npm`, `pnpm`, and `yarn` operations such as
+`install`, `add`, `update`, and `publish`. Those commands keep their useful
+`git` or `package` category; local operations such as `git status` and
+`npm pack` do not increment the network total. Each input record is one
+observable action, so an explicit network event and a network-performing
 command are counted separately even when they name the same target. JSON and
-Markdown reports use this same total; `byCategory.network` remains the count of
-network-classified commands only.
+Markdown reports use the same total, while `byCategory` remains the mutually
+exclusive command-category breakdown.
 
 Summarize the current repo since a ref:
 
