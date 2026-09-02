@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
-import { classifyCommand } from "./classify.js";
+import { classifyCommand, commandPerformsNetworkAction } from "./classify.js";
 import type { Bill, CommandCategory, ToolBillEvent, Totals } from "./types.js";
 
 const CATEGORY_ORDER: CommandCategory[] = [
@@ -158,7 +158,7 @@ export function calculateTotals(events: ToolBillEvent[]): Totals {
     commands: events.filter((event) => event.kind === "command").length,
     filesTouched: files.size,
     networkActions: events.filter(
-      (event) => event.kind === "network" || (event.kind === "command" && event.category === "network")
+      (event) => event.kind === "network" || (event.kind === "command" && commandPerformsNetworkAction(event.command))
     ).length,
     modelInvocations: events.filter((event) => event.kind === "model").length,
     toolInvocations: events.filter((event) => event.kind === "tool").length,
