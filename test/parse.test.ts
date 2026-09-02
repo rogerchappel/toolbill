@@ -105,14 +105,18 @@ test("keeps wholly textual logs on the text parser", () => {
   assert.equal(bill.totals.commands, 1);
 });
 
-test("counts network-classified commands as network actions in text logs", async () => {
+test("counts network-performing commands without replacing their useful category", async () => {
   const content = await readFile("fixtures/network-actions-text.log", "utf8");
   const bill = parseLog(content, "fixtures/network-actions-text.log");
 
   assert.equal(bill.parser, "text");
   assert.equal(bill.totals.byCategory.network, 1);
-  assert.equal(bill.totals.networkActions, 2);
-  assert.match(renderMarkdownBill(bill), /- Network-like actions: 2/);
+  assert.equal(bill.totals.byCategory.git, 2);
+  assert.equal(bill.totals.byCategory.package, 2);
+  assert.equal(bill.totals.networkActions, 4);
+  assert.match(renderMarkdownBill(bill), /- Network-like actions: 4/);
+  assert.match(renderMarkdownBill(bill), /- git: 2/);
+  assert.match(renderMarkdownBill(bill), /- package: 2/);
 });
 
 test("counts explicit and command network actions independently in JSONL", async () => {
@@ -121,6 +125,8 @@ test("counts explicit and command network actions independently in JSONL", async
 
   assert.equal(bill.parser, "jsonl");
   assert.equal(bill.totals.byCategory.network, 1);
-  assert.equal(bill.totals.networkActions, 2);
-  assert.match(renderMarkdownBill(bill), /- Network-like actions: 2/);
+  assert.equal(bill.totals.byCategory.git, 2);
+  assert.equal(bill.totals.byCategory.package, 2);
+  assert.equal(bill.totals.networkActions, 4);
+  assert.match(renderMarkdownBill(bill), /- Network-like actions: 4/);
 });
