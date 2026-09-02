@@ -44,9 +44,11 @@ test("CLI JSON and Markdown agree on mixed network action totals", async () => {
   assert.equal(json.status, 0);
   assert.equal(markdown.status, 0);
   assert.equal(bill.totals.byCategory.network, 1);
-  assert.equal(bill.totals.networkActions, 2);
-  assert.match(markdown.stdout, /- Network-like actions: 2/);
+  assert.equal(bill.totals.networkActions, 4);
+  assert.match(markdown.stdout, /- Network-like actions: 4/);
   assert.match(markdown.stdout, /- network: 1/);
+  assert.match(markdown.stdout, /- git: 2/);
+  assert.match(markdown.stdout, /- package: 2/);
 });
 
 function runCli(args: string[]) {

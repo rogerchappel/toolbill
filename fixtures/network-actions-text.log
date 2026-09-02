@@ -1,2 +1,6 @@
 command: curl https://example.com/api
 network: https://example.com/api
+command: git fetch origin
+command: git status --short
+command: npm publish
+command: npm pack
