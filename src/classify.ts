@@ -96,7 +96,7 @@ export function classifyCommand(command: string): CommandCategory {
     return "package";
   }
 
-  if (isNetworkCommand(executable, words)) {
+  if (matchesNetworkCommand(executable, words)) {
     return "network";
   }
 
@@ -109,6 +109,16 @@ export function classifyCommand(command: string): CommandCategory {
   }
 
   return "unknown";
+}
+
+export function commandPerformsNetworkAction(command: string): boolean {
+  const normalized = command.trim();
+  if (normalized.length === 0) {
+    return false;
+  }
+
+  const executable = normalized.split(/\s+/)[0]?.replace(/^['"]|['"]$/g, "") ?? "";
+  return matchesNetworkCommand(executable, normalized.split(/\s+/));
 }
 
 function isTestCommand(executable: string, words: string[]): boolean {
@@ -129,11 +139,11 @@ function isPackageCommand(executable: string, words: string[]): boolean {
   return /\b(add|ci|install|pack|publish|remove|update|upgrade)\b/.test(joined);
 }
 
-function isNetworkCommand(executable: string, words: string[]): boolean {
+function matchesNetworkCommand(executable: string, words: string[]): boolean {
   if (!NETWORK_COMMANDS.has(executable)) {
     return false;
   }
 
   const joined = words.join(" ");
-  return /\b(clone|fetch|pull|push|release|repo|api|curl|wget|ssh)\b/.test(joined);
+  return /\b(add|api|clone|curl|fetch|install|publish|pull|push|release|repo|ssh|update|wget)\b/.test(joined);
 }
