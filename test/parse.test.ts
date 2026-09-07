@@ -130,3 +130,13 @@ test("counts explicit and command network actions independently in JSONL", async
   assert.equal(bill.totals.networkActions, 4);
   assert.match(renderMarkdownBill(bill), /- Network-like actions: 4/);
 });
+
+test("counts npm ci as a package command that performs one network action", () => {
+  const bill = parseLog('{"type":"command","command":"npm ci"}\n');
+
+  assert.equal(bill.parser, "jsonl");
+  assert.equal(bill.totals.byCategory.package, 1);
+  assert.equal(bill.totals.networkActions, 1);
+  assert.match(renderMarkdownBill(bill), /- Network-like actions: 1/);
+  assert.match(renderMarkdownBill(bill), /- package: 1/);
+});
