@@ -50,7 +50,8 @@ JavaScript truthiness into a reported pass or failure.
 `Network-like actions` counts both explicit network events and commands that
 perform a recognized remote operation. This includes `git clone`, `fetch`,
 `pull`, and `push`, plus supported `npm`, `pnpm`, and `yarn` operations such as
-`install`, `add`, `update`, and `publish`. Those commands keep their useful
+`install`, `add`, `update`, and `publish`; `npm ci` is also counted because it
+installs locked dependencies from the registry. Those commands keep their useful
 `git` or `package` category; local operations such as `git status` and
 `npm pack` do not increment the network total. Each input record is one
 observable action, so an explicit network event and a network-performing

@@ -9,6 +9,7 @@ format and uses semantic versioning when versioned releases are published.
 
 ### Added
 
+- Count `npm ci` as network activity while retaining its package category.
 - Initial project setup.
 
 ## Release Links
