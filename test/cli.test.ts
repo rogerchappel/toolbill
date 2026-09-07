@@ -51,6 +51,21 @@ test("CLI JSON and Markdown agree on mixed network action totals", async () => {
   assert.match(markdown.stdout, /- package: 2/);
 });
 
+test("CLI JSON and Markdown count npm ci as package and network activity", () => {
+  const json = runCli(["json", "fixtures/npm-ci-jsonl.log"]);
+  const markdown = runCli(["summarize", "fixtures/npm-ci-jsonl.log"]);
+  const bill = JSON.parse(json.stdout) as {
+    totals: { networkActions: number; byCategory: { package: number } };
+  };
+
+  assert.equal(json.status, 0);
+  assert.equal(markdown.status, 0);
+  assert.equal(bill.totals.byCategory.package, 1);
+  assert.equal(bill.totals.networkActions, 1);
+  assert.match(markdown.stdout, /- Network-like actions: 1/);
+  assert.match(markdown.stdout, /- package: 1/);
+});
+
 function runCli(args: string[]) {
   return spawnSync("node", ["dist/src/cli.js", ...args], { encoding: "utf8" });
 }
