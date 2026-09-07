@@ -145,5 +145,8 @@ function matchesNetworkCommand(executable: string, words: string[]): boolean {
   }
 
   const joined = words.join(" ");
-  return /\b(add|api|clone|curl|fetch|install|publish|pull|push|release|repo|ssh|update|wget)\b/.test(joined);
+  return (
+    /\b(add|api|clone|curl|fetch|install|publish|pull|push|release|repo|ssh|update|wget)\b/.test(joined) ||
+    (executable === "npm" && /\bci\b/.test(joined))
+  );
 }
