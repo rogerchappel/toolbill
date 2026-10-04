@@ -140,3 +140,26 @@ test("counts npm ci as a package command that performs one network action", () =
   assert.match(renderMarkdownBill(bill), /- Network-like actions: 1/);
   assert.match(renderMarkdownBill(bill), /- package: 1/);
 });
+
+test("ignores provider-specific JSONL envelopes while retaining normalized events", async () => {
+  const content = await readFile("fixtures/codex-jsonl-edge-cases.log", "utf8");
+  const bill = parseLog(content);
+
+  assert.equal(bill.parser, "jsonl");
+  assert.equal(bill.events.length, 6);
+  assert.equal(bill.totals.commands, 1);
+  assert.equal(bill.totals.filesTouched, 1);
+  assert.equal(bill.totals.verificationCommands, 1);
+  assert.equal(bill.totals.toolInvocations, 0);
+});
+
+test("recognizes supported text prefixes without inferring free-form lines", async () => {
+  const content = await readFile("fixtures/openclaw-text-edge-cases.log", "utf8");
+  const bill = parseLog(content);
+
+  assert.equal(bill.parser, "text");
+  assert.equal(bill.totals.commands, 1);
+  assert.equal(bill.totals.filesTouched, 1);
+  assert.equal(bill.totals.verificationCommands, 1);
+  assert.equal(bill.events.find((event) => event.kind === "verification")?.passed, false);
+});
