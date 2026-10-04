@@ -1,0 +1,6 @@
+OpenClaw text export (synthetic; no account or host identifiers)
+2026-01-01T00:00:00Z assistant: inspect the parser
+exec: npm test
+read: src/parse.ts
+unknown provider metadata: intentionally not interpreted
+verification: failed - npm run check
